@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Photoshoot;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PhotoshootFactory extends Factory
 {
+    protected $model = Photoshoot::class;
+
     /**
      * Define the model's default state.
      *
