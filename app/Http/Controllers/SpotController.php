@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Spot\StoreSpotRequest;
 use App\Http\Requests\Spot\UpdateSpotRequest;
-use App\Http\Requests\SpotRequest;
 use App\Models\Spot;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
