@@ -9,12 +9,14 @@ return new class extends Migration {
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
+
             $table->string('storage_provider');
             $table->string('path');
             $table->string('name');
             $table->bigInteger('size');
             $table->string('mime');
             $table->string('extension');
+
             $table->timestamps();
         });
     }
