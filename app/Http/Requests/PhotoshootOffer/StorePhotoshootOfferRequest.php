@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\PhotoshootOffer;
 
-use App\Http\Requests\PhotoshootOffer;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\PhotoshootOffer;
 
 class StorePhotoshootOfferRequest extends FormRequest
 {
