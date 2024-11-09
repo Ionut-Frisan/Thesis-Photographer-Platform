@@ -13,90 +13,71 @@
                         class="mt-6 space-y-6"
                     >
                         <div>
-                            <Label for="name">Title <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Title"
                                 id="title"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.title"
-                                required
                                 autofocus
-                                autocomplete="title"
+                                v-model="form.data.title"
+                                :error="form.errors.title"
+                                required
                             />
-
-                            <InputError class="mt-2" :message="form.errors.title" />
                         </div>
                         <div>
-                            <Label for="description">Description <span class="text-red-500">*</span></Label>
-
-                            <Textarea
+                            <FormField
+                                label="Description"
                                 id="description"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.description"
                                 required
-                                autocomplete="description"
-                            />
-
-                            <InputError class="mt-2" :message="form.errors.description" />
+                                :error="form.errors.description"
+                            >
+                                <Textarea
+                                    id="description"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="form.data.description"
+                                    required
+                                    autocomplete="description"
+                                />
+                            </FormField>
                         </div>
                         <div>
-                            <Label for="duration">Duration <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Duration"
                                 id="duration"
-                                type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.duration"
                                 required
-                                autocomplete="duration"
+                                hint="Expressed in minutes"
+                                type="number"
+                                v-model="form.data.duration"
+                                :error="form.errors.duration"
                             />
-
-                            <InputHint class="mt-1" message="Expressed in minutes"></InputHint>
-
-                            <InputError class="mt-2" :message="form.errors.duration" />
                         </div>
                         <div>
-                            <Label for="price">Price <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Price"
                                 id="price"
-                                type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.price"
                                 required
-                                autocomplete="price"
+                                type="number"
+                                v-model="form.data.price"
+                                :error="form.errors.price"
                             />
-
-                            <InputError class="mt-2" :message="form.errors.price" />
                         </div>
                         <div>
-                            <Label for="max_images_count">Maximum images count</Label>
-
-                            <Input
+                            <FormField
+                                label="Maximum images count"
                                 id="max_images_count"
+                                v-model="form.data.max_images_count"
+                                :error="form.errors.max_images_count"
                                 type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.max_images_count"
-                                autocomplete="max_images_count"
                             />
-
-                            <InputError class="mt-2" :message="form.errors.max_images_count" />
                         </div>
                         <div>
-                            <Label for="avg_turnaround_time">Estimated turnaround time</Label>
-
-                            <Input
+                            <FormField
+                                label="Average turnaround time"
                                 id="avg_turnaround_time"
+                                v-model="form.data.avg_turnaround_time"
+                                :error="form.errors.avg_turnaround_time"
                                 type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.avg_turnaround_time"
-                                autocomplete="avg_turnaround_time"
+                                hint="Expressed in minutes"
                             />
-                            <InputHint class="mt-1" message="Expressed in minutes"></InputHint>
-
-                            <InputError class="mt-2" :message="form.errors.avg_turnaround_time" />
                         </div>
                         <div class="flex items-center gap-4">
                             <Button :disabled="form.processing">Create</Button>
@@ -108,10 +89,11 @@
     </AuthenticatedLayout>
 </template>
 <script setup lang="ts">
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head , usePage} from "@inertiajs/vue3";
+import { useForm } from "../../Composables/useForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputError from "@/Components/InputError.vue";
-import InputHint from "@/Components/InputHint.vue";
+import FormField from "@/Components/FormField.vue";
+import { useToast } from '@/Components/ui/toast/use-toast'
 
 const user = usePage().props.auth.user;
 
@@ -125,8 +107,19 @@ const form = useForm({
     avg_turnaround_time: null,
 });
 
+const { toast } = useToast();
+
 const submit = async () => {
-    await form.post(route('photoshoot-offers.store'));
+    await form.post(route('photoshoot-offers.store'), {
+        successCallback() {
+            toast({
+                variant: 'success',
+                title: 'Success',
+                description: 'Photoshoot offer created successfully',
+            });
+            form.reset();
+        }
+    });
 };
 </script>
 

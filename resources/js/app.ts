@@ -10,6 +10,7 @@ import Label from '@/components/ui/label/Label.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import {Textarea} from "@/Components/ui/textarea";
+import FormField from "@/Components/FormField.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -27,6 +28,7 @@ createInertiaApp({
             .component('Input', Input)
             .component('Checkbox', Checkbox)
             .component('Textarea', Textarea)
+            .component('FormField', FormField)
             .mount(el);
     },
     progress: {
