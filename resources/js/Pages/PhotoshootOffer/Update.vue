@@ -1,9 +1,10 @@
 <template>
-    <Head title="Update photoshoot offer" />
+    <Head title="Update photoshoot offer"/>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Update photoshoot offer - <i>{{photoshootOffer?.title}}</i></h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Update photoshoot offer -
+                <i>{{ photoshootOffer?.title }}</i></h2>
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -13,90 +14,71 @@
                         class="mt-6 space-y-6"
                     >
                         <div>
-                            <Label for="name">Title <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Title"
                                 id="title"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.title"
-                                required
                                 autofocus
-                                autocomplete="title"
+                                v-model="form.data.title"
+                                :error="form.errors.title"
+                                required
                             />
-
-                            <InputError class="mt-2" :message="form.errors.title" />
                         </div>
                         <div>
-                            <Label for="description">Description <span class="text-red-500">*</span></Label>
-
-                            <Textarea
+                            <FormField
+                                label="Description"
                                 id="description"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.description"
                                 required
-                                autocomplete="description"
-                            />
-
-                            <InputError class="mt-2" :message="form.errors.description" />
+                                :error="form.errors.description"
+                            >
+                                <Textarea
+                                    id="description"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="form.data.description"
+                                    required
+                                    autocomplete="description"
+                                />
+                            </FormField>
                         </div>
                         <div>
-                            <Label for="duration">Duration <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Duration"
                                 id="duration"
-                                type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.duration"
                                 required
-                                autocomplete="duration"
+                                hint="Expressed in minutes"
+                                type="number"
+                                v-model="form.data.duration"
+                                :error="form.errors.duration"
                             />
-
-                            <InputHint class="mt-1" message="Expressed in minutes"></InputHint>
-
-                            <InputError class="mt-2" :message="form.errors.duration" />
                         </div>
                         <div>
-                            <Label for="price">Price <span class="text-red-500">*</span></Label>
-
-                            <Input
+                            <FormField
+                                label="Price"
                                 id="price"
-                                type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.price"
                                 required
-                                autocomplete="price"
+                                type="number"
+                                v-model="form.data.price"
+                                :error="form.errors.price"
                             />
-
-                            <InputError class="mt-2" :message="form.errors.price" />
                         </div>
                         <div>
-                            <Label for="max_images_count">Maximum images count</Label>
-
-                            <Input
+                            <FormField
+                                label="Maximum images count"
                                 id="max_images_count"
+                                v-model="form.data.max_images_count"
+                                :error="form.errors.max_images_count"
                                 type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.max_images_count"
-                                autocomplete="max_images_count"
                             />
-
-                            <InputError class="mt-2" :message="form.errors.max_images_count" />
                         </div>
                         <div>
-                            <Label for="avg_turnaround_time">Estimated turnaround time</Label>
-
-                            <Input
+                            <FormField
+                                label="Average turnaround time"
                                 id="avg_turnaround_time"
+                                v-model="form.data.avg_turnaround_time"
+                                :error="form.errors.avg_turnaround_time"
                                 type="number"
-                                class="mt-1 block w-full"
-                                v-model="form.avg_turnaround_time"
-                                autocomplete="avg_turnaround_time"
+                                hint="Expressed in minutes"
                             />
-                            <InputHint class="mt-1" message="Expressed in minutes"></InputHint>
-
-                            <InputError class="mt-2" :message="form.errors.avg_turnaround_time" />
                         </div>
                         <div class="flex items-center gap-4">
                             <Button :disabled="form.processing">Update</Button>
@@ -108,22 +90,41 @@
     </AuthenticatedLayout>
 </template>
 <script setup lang="ts">
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head, usePage} from "@inertiajs/vue3";
+import {useForm} from "@/Composables/useForm";
+import {useToast} from "@/Components/ui/toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputHint from "@/Components/InputHint.vue";
 import {PhotoshootOffer} from "@/types";
+import FormField from "@/Components/FormField.vue";
 
 defineProps<{
     photoshootOffer: PhotoshootOffer
 }>();
 
 const user = usePage().props.auth.user;
-const photoshootOffer = usePage().props.photoshootOffer;
+const photoshootOffer: PhotoshootOffer = usePage().props.photoshootOffer as PhotoshootOffer;
 const form = useForm({...photoshootOffer});
+const {toast} = useToast();
 
 const submit = async () => {
-    await form.put(route('photoshoot-offers.update'));
+    await form.put(route('photoshoot-offers.update', photoshootOffer), {
+        successCallback(data) {
+            toast({
+                variant: 'success',
+                title: 'Success',
+                description: 'Photoshoot offer updated successfully',
+            });
+        },
+        errorCallback() {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Photoshoot offer update failed',
+            });
+        }
+    });
 };
 </script>
 

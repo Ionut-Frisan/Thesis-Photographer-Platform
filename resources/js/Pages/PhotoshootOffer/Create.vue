@@ -1,9 +1,10 @@
 <template>
-    <Head title="Create new photoshoot offer" />
+    <Head title="Create new photoshoot offer"/>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create photoshoot offer</h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create photoshoot
+                offer</h2>
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -89,11 +90,11 @@
     </AuthenticatedLayout>
 </template>
 <script setup lang="ts">
-import {Head , usePage} from "@inertiajs/vue3";
-import { useForm } from "../../Composables/useForm";
+import {Head, usePage} from "@inertiajs/vue3";
+import {useForm} from "../../Composables/useForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import FormField from "@/Components/FormField.vue";
-import { useToast } from '@/Components/ui/toast/use-toast'
+import {useToast} from '@/Components/ui/toast/use-toast'
 
 const user = usePage().props.auth.user;
 
@@ -107,7 +108,7 @@ const form = useForm({
     avg_turnaround_time: null,
 });
 
-const { toast } = useToast();
+const {toast} = useToast();
 
 const submit = async () => {
     await form.post(route('photoshoot-offers.store'), {
@@ -118,6 +119,7 @@ const submit = async () => {
                 description: 'Photoshoot offer created successfully',
             });
             form.reset();
+            form.data.tst = Date.now();
         }
     });
 };

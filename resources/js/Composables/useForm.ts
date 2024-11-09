@@ -1,7 +1,8 @@
-import { reactive, watch } from "vue";
-import axios from "axios";
+import {reactive, UnwrapNestedRefs, watch} from "vue";
+import axios, { AxiosError } from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import deepEqual from "fast-deep-equal"
+import {isObject} from "@/lib/utils";
 
 // TODO: handle file upload
 
@@ -15,15 +16,15 @@ type RequestOptions = {
      * Function to be called when request fails.
      * @param errors {Record<string, string[]>}
      */
-    errorCallback?: (errors: Record<string, string[]>) => void;
+    errorCallback?: (error: AxiosError) => void;
     /**
      * Function to be called regardless of the result of the request.
      */
     finallyCallback?: () => void;
 } & AxiosRequestConfig;
 
-type SubmitFunction = (method: string, url: string, options: RequestOptions) => Promise<AxiosResponse>;
-type AliasFunction = (url: string, options: RequestOptions) => Promise<AxiosResponse>;
+type SubmitFunction = (method: string, url: string, options: RequestOptions) => Promise<AxiosResponse | undefined>;
+type AliasFunction = (url: string, options: RequestOptions) => Promise<AxiosResponse | undefined>;
 
 type FormData<T> = {
     data: T;
@@ -39,6 +40,8 @@ type FormData<T> = {
     patch: AliasFunction;
     delete: AliasFunction;
     put: AliasFunction;
+    reset: () => void;
+    resetMeta: () => void;
 };
 
 /**
@@ -54,10 +57,14 @@ type FormData<T> = {
  * @returns {object} - A reactive object containing the form data, errors, and methods
  *   for managing form state and submissions.
  */
-export function useForm<T>(initialValue: T = {}): FormData<T> {
+export function useForm<T extends {[x: string | number | symbol]: unknown}>(initialValue: T): FormData<T & {[x: string | number | symbol]: unknown}> {
+    if (!isObject(initialValue)) {
+        throw new Error("Initial value must be an object");
+    }
+
     const initialData = { ...initialValue };
 
-    const form = reactive({
+    const form: FormData<T> = reactive({
         data: initialValue,
         errors: {},
         rawErrors: {},
@@ -88,7 +95,7 @@ export function useForm<T>(initialValue: T = {}): FormData<T> {
                 return;
             }
             form.errors = Object.entries(newData)
-                .reduce((acc, [key, value]) => {
+                .reduce((acc: Record<string, string>, [key, value]) => {
                     acc[key] = value.join(', ');
                     return acc;
                 }, {});
@@ -134,7 +141,7 @@ export function useForm<T>(initialValue: T = {}): FormData<T> {
         let response: AxiosResponse; // Initialize the response object
 
         try {
-            const config = {
+            const config: AxiosRequestConfig = {
                 ...opts,
                 headers: {
                     "Content-Type": "application/json",
@@ -148,17 +155,19 @@ export function useForm<T>(initialValue: T = {}): FormData<T> {
             response = await axios(config);
 
             if (successCallback && typeof successCallback === "function") {
-                successCallback(response.form);
+                successCallback(response.data);
             }
             form.wasSuccessful = true;
-        } catch (error) {
-            if (error.response.status === 422) {
+        } catch (error: unknown) {
+            if (!(error instanceof AxiosError)) return;
+
+            if (error?.response?.status === 422) {
                 form.rawErrors = error.response.data?.errors || {};
             }
             if (errorCallback && typeof errorCallback === "function") {
                 errorCallback(error);
             }
-            response = error.response;
+            response = error.response as AxiosResponse;
         } finally {
             if (finallyCallback && typeof finallyCallback === "function") {
                 finallyCallback();

@@ -13,8 +13,10 @@ const form = useForm({
     file: null,
 });
 
-const onFileChange = (event) => {
-    form.file = event.target.files[0];
+const onFileChange = (event: Event) => {
+    if ((event?.target as HTMLInputElement)?.files && (event.target as HTMLInputElement).files?.length) {
+        form.file = (event.target as HTMLInputElement).files?.[0];
+    }
 };
 
 const uploadFile = () => {

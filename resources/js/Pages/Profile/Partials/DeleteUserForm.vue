@@ -12,7 +12,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref<HTMLInputElement | null>(null);
