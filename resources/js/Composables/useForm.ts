@@ -4,8 +4,6 @@ import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import deepEqual from "fast-deep-equal"
 import {isObject} from "@/lib/utils";
 
-// TODO: handle file upload
-
 type RequestOptions = {
     /**
      * Function to be called when the request is successful.
@@ -21,12 +19,17 @@ type RequestOptions = {
      * Function to be called regardless of the result of the request.
      */
     finallyCallback?: () => void;
+    /**
+     * Force the form to use FormData instead of JSON.
+     * @default false
+     */
+    forceFormData?: boolean;
 } & AxiosRequestConfig;
 
 type SubmitFunction = (method: string, url: string, options: RequestOptions) => Promise<AxiosResponse | undefined>;
 type AliasFunction = (url: string, options: RequestOptions) => Promise<AxiosResponse | undefined>;
 
-type FormData<T> = {
+type FormInfo<T> = {
     data: T;
     errors: Record<string, string>;
     rawErrors: Record<string, string[]>;
@@ -57,14 +60,14 @@ type FormData<T> = {
  * @returns {object} - A reactive object containing the form data, errors, and methods
  *   for managing form state and submissions.
  */
-export function useForm<T extends {[x: string | number | symbol]: unknown}>(initialValue: T): FormData<T & {[x: string | number | symbol]: unknown}> {
+export function useForm<T extends {[x: string | number | symbol]: unknown}>(initialValue: T): FormInfo<T & {[x: string | number | symbol]: unknown}> {
     if (!isObject(initialValue)) {
         throw new Error("Initial value must be an object");
     }
 
     const initialData = { ...initialValue };
 
-    const form: FormData<T> = reactive({
+    const form: FormInfo<T> = reactive({
         data: initialValue,
         errors: {},
         rawErrors: {},
@@ -136,20 +139,36 @@ export function useForm<T extends {[x: string | number | symbol]: unknown}>(init
             successCallback,
             errorCallback,
             finallyCallback,
+            forceFormData = false,
             ...opts
         } = options;
         let response: AxiosResponse; // Initialize the response object
+        let data: FormData | T = form.data;
+
+        // If forceFormData is true, convert the form object to FormData
+        if (forceFormData) {
+            data = new FormData();
+            Object.entries(form.data).forEach(([key, value]) => {
+                if (value instanceof File) {
+                    data.append(key, value);
+                } else {
+                    data.append(key, String(value));
+                }
+            });
+        }
+        // Set the Content-Type header based on forceFormData
+        const contentType = forceFormData ? "multipart/form-data" : "application/json";
 
         try {
             const config: AxiosRequestConfig = {
                 ...opts,
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": contentType,
                     ...opts.headers,
                 },
                 url,
                 method,
-                data: form.data,
+                data,
             }
 
             response = await axios(config);

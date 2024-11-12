@@ -29,7 +29,6 @@ const showingNavigationDropdown = ref(false);
                                 </Link>
                             </div>
 
-                            <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
@@ -38,6 +37,12 @@ const showingNavigationDropdown = ref(false);
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('images.demo.upload')" :active="route().current('images.demo.upload')">
                                     Upload
+                                </NavLink>
+                            </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('photoshoot-offers.create')" :active="route().current('dashboard')">
+                                    + Photoshoot offer
                                 </NavLink>
                             </div>
                         </div>

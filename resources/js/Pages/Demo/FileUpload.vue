@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import { useForm } from "@inertiajs/vue3";
+import { useForm } from "@/Composables/useForm";
 import InputError from "@/Components/InputError.vue";
 
 defineProps<{
@@ -15,7 +15,7 @@ const form = useForm({
 
 const onFileChange = (event: Event) => {
     if ((event?.target as HTMLInputElement)?.files && (event.target as HTMLInputElement).files?.length) {
-        form.file = (event.target as HTMLInputElement).files?.[0];
+        form.data.file = (event.target as HTMLInputElement).files?.[0];
     }
 };
 
