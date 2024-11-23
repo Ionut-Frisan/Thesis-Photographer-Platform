@@ -38,7 +38,7 @@ class PhotoshootOfferController extends Controller
     public function create()
     {
         $this->authorize('create', PhotoshootOffer::class);
-        return Inertia::render('PhotoshootOffer/Create');
+        return Inertia::render('PhotoshootOffer/CreatePhotoshootOffer');
     }
 
     /**
@@ -85,7 +85,7 @@ class PhotoshootOfferController extends Controller
     public function edit(PhotoshootOffer $photoshootOffer)
     {
         $this->authorize('update', [PhotoshootOffer::class, $photoshootOffer]);
-        return Inertia::render('PhotoshootOffer/Update', ['photoshootOffer' => $photoshootOffer]);
+        return Inertia::render('PhotoshootOffer/UpdatePhotoshootOffer', ['photoshootOffer' => $photoshootOffer]);
     }
 
     /**
@@ -123,6 +123,6 @@ class PhotoshootOfferController extends Controller
 
         $photoshootOffer->delete();
 
-        return response()->json();
+        return response();
     }
 }

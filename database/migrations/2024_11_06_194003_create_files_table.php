@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
 
-            $table->string('storage_provider');
+            $table->string('storage_provider')->default('s3');
             $table->string('path');
             $table->string('name');
             $table->bigInteger('size');

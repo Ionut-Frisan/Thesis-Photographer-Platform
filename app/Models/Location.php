@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Location extends Model
 {
@@ -16,8 +17,12 @@ class Location extends Model
         'description',
     ];
 
-    public function coverImage(): BelongsTo
+    protected $with = [
+        'coverImage'
+    ];
+
+    public function coverImage(): HasOne
     {
-        return $this->belongsTo(File::class, 'cover_image_id');
+        return $this->hasOne(File::class, 'id', 'cover_image_id');
     }
 }

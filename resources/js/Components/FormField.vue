@@ -11,6 +11,9 @@
             :id="id"
             :autofocus="autofocus"
             :autocomplete="id"
+            :multiple="multiple"
+            :accept="accept"
+            @change="onChange"
             class="mt-1 block w-full"
         ></Input>
     </slot>
@@ -38,6 +41,8 @@ const props = withDefaults(
         required?: boolean;
         readonly?: boolean;
         autofocus?: boolean;
+        multiple?: boolean;
+        accept?: string,
     }>(),
     {
         label: '',
@@ -49,8 +54,17 @@ const props = withDefaults(
         required: false,
         readonly: false,
         autofocus: false,
+        multiple: false,
+        accept: '',
     }
 )
+
+const emit = defineEmits(['change']);
+
+const onChange = (event) => {
+    emit('change', event);
+}
+
 </script>
 <style scoped>
 

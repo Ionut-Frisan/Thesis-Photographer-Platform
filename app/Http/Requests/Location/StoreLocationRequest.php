@@ -15,9 +15,10 @@ class StoreLocationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cover_image_id' => ['nullable', 'exists:files'],
-            'title' => ['required'],
-            'description' => ['required'],
+            'cover_image_id' => ['nullable', 'exists:files', 'required_without:cover_image'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:4096', 'required_without:cover_image_id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
         ];
     }
 

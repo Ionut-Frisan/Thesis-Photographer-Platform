@@ -41,7 +41,7 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('photoshoot-offers.create')" :active="route().current('dashboard')">
+                                <NavLink :href="route('photoshoot-offers.create')" :active="route().current('photoshoot-offers.create')">
                                     + Photoshoot offer
                                 </NavLink>
                             </div>

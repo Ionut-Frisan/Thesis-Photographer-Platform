@@ -7,8 +7,13 @@ export interface User {
     email_verified_at?: string;
 }
 
-export interface PhotoshootOffer {
+interface BaseModel {
     id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PhotoshootOffer extends BaseModel{
     title: string;
     description: string;
     price: number;
@@ -16,8 +21,28 @@ export interface PhotoshootOffer {
     photographer_id: number;
     max_images_count: number;
     avg_turnaround_time: string;
-    updated_at?: string;
-    created_at?: string;
+}
+
+export interface FileObject extends BaseModel{
+    name: string;
+    path: string;
+    size: number;
+    mime: string;
+    extension: string;
+    storage_provider: string;
+}
+
+export interface Location extends BaseModel{
+    title: string;
+    description: string;
+    cover_image_id: number;
+    cover_image: FileObject;
+}
+
+export interface CreateLocationRequest {
+    title: string;
+    description: string;
+    cover_image: File | null;
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

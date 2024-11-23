@@ -28,3 +28,4 @@ require __DIR__.'/auth.php';
 require __DIR__.'/photoshoot.php';
 require __DIR__.'/photoshoot-offer.php';
 require __DIR__.'/image.php';
+require __DIR__.'/location.php';
