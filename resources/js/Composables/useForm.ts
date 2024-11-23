@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import deepEqual from "fast-deep-equal"
 import {isObject} from "@/lib/utils";
+import cloneDeep from "lodash.clonedeep";
 
 type RequestOptions = {
     /**
@@ -68,7 +69,7 @@ export function useForm<T extends {[x: string | number | symbol]: unknown}>(init
     const initialData = { ...initialValue };
 
     const form: FormInfo<T> = reactive({
-        data: initialValue,
+        data: cloneDeep(initialData),
         errors: {},
         rawErrors: {},
         isDirty: false,
@@ -112,7 +113,7 @@ export function useForm<T extends {[x: string | number | symbol]: unknown}>(init
      * after a successful submission.
      */
     const reset = () => {
-        form.data = initialData;
+        form.data = cloneDeep(initialData);
         resetMeta();
     };
 
@@ -150,9 +151,9 @@ export function useForm<T extends {[x: string | number | symbol]: unknown}>(init
             data = new FormData();
             Object.entries(form.data).forEach(([key, value]) => {
                 if (value instanceof File) {
-                    data.append(key, value);
+                    (data as FormData).append(key, value);
                 } else {
-                    data.append(key, String(value));
+                    (data as FormData).append(key, String(value));
                 }
             });
         }
